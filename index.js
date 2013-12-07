@@ -51,36 +51,37 @@ Plugins.prototype.load = function(name, opts) {
   return plugin;
 };
 
-// Get a loaded plugin instance by name
+// Get a loaded plugin instance by name or instance
 Plugins.prototype.get = function(name) {
-  return this.pluginMap[name];
+  if (typeof name === "string")
+    return this.pluginMap[name];
+  else
+    // assume it is a plugin instance already, return as-is
+    return name;
 };
 
-Plugins.prototype.isEnabled = function(plugin) {
-  if (typeof plugin === "string")
-    plugin = this.get(plugin);
+Plugins.prototype.isEnabled = function(name) {
+  var plugin = this.get(name);
 
   return !!(plugin && plugin.pluginEnabled);
 };
 
-Plugins.prototype.isLoaded = function(plugin) {
-  if (typeof plugin === "string")
-    plugin = this.get(plugin);
+Plugins.prototype.isLoaded = function(name) {
+  var plugin = this.get(name);
 
   return !!(plugin && plugin.pluginName && this.pluginMap[plugin.pluginName]);
 };
 
-Plugins.prototype.enable = function(plugin) {
-  if (typeof plugin === "string")
-    plugin = this.get(plugin);
-  console.log("enabling plugin ",plugin);
+Plugins.prototype.enable = function(name) {
+  console.log("enabling plugin ",name);
+  var plugin = this.get(name);
 
   if (!plugin) {
-    console.log("no such plugin loaded to enable: ",plugin);
+    console.log("no such plugin loaded to enable: ",plugin,name);
     return false;
   } else {
     if (plugin.pluginEnabled) {
-      console.log("already enabled: ",plugin);
+      console.log("already enabled: ",plugin,name);
       return false;
     }
 
@@ -88,7 +89,7 @@ Plugins.prototype.enable = function(plugin) {
       try {
         plugin.enable();
       } catch(e) {
-        console.log("failed to enable:",plugin,e);
+        console.log("failed to enable:",plugin,name,e);
         return false;
       }
     }
@@ -97,17 +98,16 @@ Plugins.prototype.enable = function(plugin) {
   return true;
 };
 
-Plugins.prototype.disable = function(plugin) {
-  console.log("disabling plugin ",plugin);
-  if (typeof plugin === "string")
-    plugin = this.get(plugin);
+Plugins.prototype.disable = function(name) {
+  console.log("disabling plugin ",name);
+  var plugin = this.get(name);
 
   if (!plugin) {
-    console.log("no such plugin loaded to disable: ",plugin);
+    console.log("no such plugin loaded to disable: ",plugin,name);
     return false;
   }
   if (!this.isEnabled(plugin)) {
-    console.log("already disabled: ",plugin);
+    console.log("already disabled: ",plugin,name);
     return false;
   }
 
@@ -115,7 +115,7 @@ Plugins.prototype.disable = function(plugin) {
     try {
       plugin.disable(); 
     } catch (e) {
-      console.log("failed to disable:",plugin,e);
+      console.log("failed to disable:",plugin,name,e);
       return false;
     }
   }
@@ -127,12 +127,11 @@ Plugins.prototype.disable = function(plugin) {
   return true;
 };
 
-Plugins.prototype.unload = function(plugin) {
-  if (typeof plugin === "string")
-    plugin = this.get(plugin);
+Plugins.prototype.unload = function(name) {
+  var plugin = this.get(name);
 
   if (!plugin) {
-    console.log("no plugin",plugin);
+    console.log("no plugin",plugin,name);
     return false;
   }
 
