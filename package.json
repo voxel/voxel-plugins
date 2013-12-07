@@ -1,0 +1,19 @@
+{
+    "name": "voxel-plugins",
+    "description": "",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:deathcap/voxel-plugins.git"
+    },
+    "dependencies": {
+        "voxel-engine": "git@github.com:deathcap/voxel-engine.git",
+    },
+    "devDependencies": {
+        "browserify": "2.35.1",
+        "beefy": "0.4.5"
+    },
+    "scripts": {
+        "start": "beefy test.coffee:bundle.js 8080"
+    }
+}
