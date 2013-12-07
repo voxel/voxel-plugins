@@ -5,7 +5,7 @@ module.exports = function(game, opts) {
 // for quick testing in browser
 window.p=module.exports(2,{});
 window.require=function(game,opts){ return function(game,opts){
-  this.enable = function() { console.log("ENABLE"); throw "FAIL"};
+  this.enable = function() { console.log("ENABLE"); };
   this.disable = function() { console.log("DISABLE"); };
   return this;
 }}; // TODO: require-bin?
@@ -16,10 +16,6 @@ function Plugins(game, opts) {
 
   // map plugin name to instances
   this.pluginMap = {};
-
-  // map plugin name to whether they are enabled (plugins can be disabled,
-  // but their instance remain in pluginsMap to be reenabled later)
-  this.enableStates = {};
 }
 
 // Loads a plugin instance (does not enable)
@@ -45,7 +41,7 @@ Plugins.prototype.load = function(name, opts) {
     return false;
   }
   this.pluginMap[name] = plugin;
-  this.enableStates[name] = false;
+  plugin.pluginEnabled = false;
 
   console.log("loaded plugin ",name,plugin);
   // TODO: maybe we should enable by default?
@@ -56,11 +52,12 @@ Plugins.prototype.load = function(name, opts) {
 
 // Get a loaded plugin instance
 Plugins.prototype.get = function(name) {
+  console.log("pluginMap=",this.pluginMap);
   return this.pluginMap[name];
 };
 
-Plugins.prototype.isEnabled = function(name) {
-  return this.enableStates[name];
+Plugins.prototype.isEnabled = function(plugin) {
+  return plugin && plugin.pluginEnabled;
 };
 
 Plugins.prototype.enable = function(name) {
@@ -71,7 +68,7 @@ Plugins.prototype.enable = function(name) {
     console.log("no such plugin loaded to enable: ",name);
     return false;
   } else {
-    if (this.enableStates[name]) {
+    if (plugin.pluginEnabled) {
       console.log("already enabled: ",name);
       return false;
     }
@@ -84,7 +81,7 @@ Plugins.prototype.enable = function(name) {
         return false;
       }
     }
-    this.enableStates[name] = true;
+    plugin.pluginEnabled = true;
   }
   return true;
 };
@@ -96,7 +93,7 @@ Plugins.prototype.disable = function(name) {
     console.log("no such plugin loaded to disable: ",name);
     return false;
   }
-  if (!this.isEnabled(name)) {
+  if (!this.isEnabled(plugin)) {
     console.log("already disabled: ", name);
     return false;
   }
@@ -110,7 +107,8 @@ Plugins.prototype.disable = function(name) {
     }
   }
 
-  this.enableStates[name] = false;
+  console.log("disabling X",plugin);
+  plugin.pluginEnabled = false;
 
   // TODO: recursively disable dependants? or refuse to disable if has enabled dependants?
   return true;
@@ -122,11 +120,10 @@ Plugins.prototype.unload = function(name) {
     return false;
   }
 
-  if (this.isEnabled(name))
+  if (this.isEnabled(plugin))
     this.disable(name);
 
   delete this.pluginMap[name];
-  delete this.enableStates[name];
   console.log("unloaded ",name);
 
   return true;
