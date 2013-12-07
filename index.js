@@ -40,8 +40,9 @@ Plugins.prototype.load = function(name, opts) {
     console.log("create plugin failed:",name,createPlugin,plugin);
     return false;
   }
-  this.pluginMap[name] = plugin;
+  plugin.pluginName = name;
   plugin.pluginEnabled = false;
+  this.pluginMap[name] = plugin;
 
   console.log("loaded plugin ",name,plugin);
   // TODO: maybe we should enable by default?
@@ -56,7 +57,17 @@ Plugins.prototype.get = function(name) {
 };
 
 Plugins.prototype.isEnabled = function(plugin) {
-  return plugin && plugin.pluginEnabled;
+  if (typeof plugin === "string")
+    plugin = this.get(plugin);
+
+  return !!(plugin && plugin.pluginEnabled);
+};
+
+Plugins.prototype.isLoaded = function(plugin) {
+  if (typeof plugin === "string")
+    plugin = this.get(plugin);
+
+  return !!(plugin && plugin.pluginName && this.pluginMap[plugin.pluginName]);
 };
 
 Plugins.prototype.enable = function(plugin) {
@@ -116,17 +127,25 @@ Plugins.prototype.disable = function(plugin) {
   return true;
 };
 
-Plugins.prototype.unload = function(name) {
-  if (!this.pluginMap[name]) {
-    console.log("no such plugin to unload: ",name);
+Plugins.prototype.unload = function(plugin) {
+  if (typeof plugin === "string")
+    plugin = this.get(plugin);
+
+  if (!plugin) {
+    console.log("no plugin",plugin);
+    return false;
+  }
+
+  if (!this.pluginMap[plugin.pluginName]) {
+    console.log("no such plugin to unload: ",plugin);
     return false;
   }
 
   if (this.isEnabled(plugin))
-    this.disable(name);
+    this.disable(plugin);
 
-  delete this.pluginMap[name];
-  console.log("unloaded ",name);
+  delete this.pluginMap[plugin.pluginName];
+  console.log("unloaded ",plugin);
 
   return true;
 };
