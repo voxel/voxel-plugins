@@ -4,7 +4,11 @@ module.exports = function(game, opts) {
 
 // for quick testing in browser
 window.p=module.exports(2,{});
-window.require=function(game,opts){ return function(game,opts){return 1}}; // TODO: require-bin?
+window.require=function(game,opts){ return function(game,opts){
+  this.enable = function() { console.log("ENABLE"); throw "FAIL"};
+  this.disable = function() { console.log("DISABLE"); };
+  return this;
+}}; // TODO: require-bin?
 
 function Plugins(game, opts) {
   this.game = game;
@@ -62,21 +66,27 @@ Plugins.prototype.isEnabled = function(name) {
 Plugins.prototype.enable = function(name) {
   console.log("enabling plugin ",name);
   var plugin = this.get(name);
-  var success = false;
 
   if (!plugin) {
     console.log("no such plugin loaded to enable: ",name);
-    success = false;
+    return false;
   } else {
     if (this.enableStates[name]) {
       console.log("already enabled: ",name);
       return false;
     }
 
-    success = plugin.enable ? plugin.enable() : true; // enable() is optional
-    this.enableStates[name] = success;
+    if (plugin.enable) {
+      try {
+        plugin.enable();
+      } catch(e) {
+        console.log("failed to enable:",name,e);
+        return false;
+      }
+    }
+    this.enableStates[name] = true;
   }
-  return success;
+  return true;
 };
 
 Plugins.prototype.disable = function(name) {
@@ -91,8 +101,14 @@ Plugins.prototype.disable = function(name) {
     return false;
   }
 
-  if (plugin.disable)
-    plugin.disable(); 
+  if (plugin.disable) {
+    try {
+      plugin.disable(); 
+    } catch (e) {
+      console.log("failed to disable:",name,e);
+      return false;
+    }
+  }
 
   this.enableStates[name] = false;
 
