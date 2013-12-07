@@ -50,9 +50,8 @@ Plugins.prototype.load = function(name, opts) {
   return plugin;
 };
 
-// Get a loaded plugin instance
+// Get a loaded plugin instance by name
 Plugins.prototype.get = function(name) {
-  console.log("pluginMap=",this.pluginMap);
   return this.pluginMap[name];
 };
 
@@ -60,16 +59,17 @@ Plugins.prototype.isEnabled = function(plugin) {
   return plugin && plugin.pluginEnabled;
 };
 
-Plugins.prototype.enable = function(name) {
-  console.log("enabling plugin ",name);
-  var plugin = this.get(name);
+Plugins.prototype.enable = function(plugin) {
+  if (typeof plugin === "string")
+    plugin = this.get(plugin);
+  console.log("enabling plugin ",plugin);
 
   if (!plugin) {
-    console.log("no such plugin loaded to enable: ",name);
+    console.log("no such plugin loaded to enable: ",plugin);
     return false;
   } else {
     if (plugin.pluginEnabled) {
-      console.log("already enabled: ",name);
+      console.log("already enabled: ",plugin);
       return false;
     }
 
@@ -77,7 +77,7 @@ Plugins.prototype.enable = function(name) {
       try {
         plugin.enable();
       } catch(e) {
-        console.log("failed to enable:",name,e);
+        console.log("failed to enable:",plugin,e);
         return false;
       }
     }
@@ -86,15 +86,17 @@ Plugins.prototype.enable = function(name) {
   return true;
 };
 
-Plugins.prototype.disable = function(name) {
-  console.log("disabling plugin ",name);
-  var plugin = this.get(name);
+Plugins.prototype.disable = function(plugin) {
+  console.log("disabling plugin ",plugin);
+  if (typeof plugin === "string")
+    plugin = this.get(plugin);
+
   if (!plugin) {
-    console.log("no such plugin loaded to disable: ",name);
+    console.log("no such plugin loaded to disable: ",plugin);
     return false;
   }
   if (!this.isEnabled(plugin)) {
-    console.log("already disabled: ", name);
+    console.log("already disabled: ",plugin);
     return false;
   }
 
@@ -102,7 +104,7 @@ Plugins.prototype.disable = function(name) {
     try {
       plugin.disable(); 
     } catch (e) {
-      console.log("failed to disable:",name,e);
+      console.log("failed to disable:",plugin,e);
       return false;
     }
   }
