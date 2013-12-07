@@ -2,17 +2,12 @@ module.exports = function(game, opts) {
   return new Plugins(game, opts);
 };
 
-// for quick testing in browser
-window.p=module.exports(2,{});
-window.require=function(game,opts){ return function(game,opts){
-  this.enable = function() { console.log("ENABLE"); };
-  this.disable = function() { console.log("DISABLE"); };
-  return this;
-}}; // TODO: require-bin?
-
 function Plugins(game, opts) {
   this.game = game;
-  game.plugins = this;
+  this.game.plugins = this;
+
+  opts = opts || {};
+  this.require = opts.require || require;
 
   // map plugin name to instances
   this.pluginMap = {};
@@ -29,7 +24,7 @@ Plugins.prototype.load = function(name, opts) {
 
   opts = opts || {};
 
-  var createPlugin = require(name);   // factory for constructor
+  var createPlugin = this.require(name);   // factory for constructor
   if (!createPlugin) {
     console.log("plugin not found: ",name);
     return false;
