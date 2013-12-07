@@ -72,6 +72,18 @@ Plugins.prototype.isLoaded = function(name) {
   return !!(plugin && plugin.pluginName && this.pluginMap[plugin.pluginName]);
 };
 
+// Get list of enabled plugins
+Plugins.prototype.list = function() {
+  var self = this;
+  return this.listAll().filter(function(plugin) { return self.isEnabled(plugin); });
+};
+
+// Get list of all plugins
+Plugins.prototype.listAll = function() {
+  return Object.keys(this.pluginMap);
+};
+
+
 Plugins.prototype.enable = function(name) {
   console.log("enabling plugin ",name);
   var plugin = this.get(name);
