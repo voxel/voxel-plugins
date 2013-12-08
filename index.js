@@ -9,6 +9,7 @@ function Plugins(game, opts) {
   opts = opts || {};
   this.require = opts.require || require;
   this.enableOnLoad = opts.enableOnLoad || true;
+  this.namePrefix = opts.namePrefix || "voxel-";
 
   // map plugin name to instances
   this.pluginMap = {};
@@ -24,8 +25,8 @@ Plugins.prototype.load = function(name, opts) {
   }
 
   opts = opts || {};
-
-  var createPlugin = this.require(name);   // factory for constructor
+  
+  var createPlugin = this.require(this.namePrefix + name);   // factory for constructor
   if (!createPlugin) {
     console.log("plugin not found: ",name);
     return false;
@@ -40,7 +41,7 @@ Plugins.prototype.load = function(name, opts) {
   plugin.pluginEnabled = false;
   this.pluginMap[name] = plugin;
 
-  console.log("Loaded plugin",name,plugin);
+  console.log("Loaded plugin:",name,plugin);
 
   // plugins are enabled on load by default
   if (this.enableOnLoad) this.enable(plugin);
