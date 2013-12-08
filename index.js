@@ -8,12 +8,13 @@ function Plugins(game, opts) {
 
   opts = opts || {};
   this.require = opts.require || require;
+  this.enableOnLoad = opts.enableOnLoad || true;
 
   // map plugin name to instances
   this.pluginMap = {};
 }
 
-// Loads a plugin instance (does not enable)
+// Loads a plugin instance
 Plugins.prototype.load = function(name, opts) {
   console.log("loading plugin ",name,opts);
   
@@ -40,8 +41,9 @@ Plugins.prototype.load = function(name, opts) {
   this.pluginMap[name] = plugin;
 
   console.log("loaded plugin ",name,plugin);
-  // TODO: maybe we should enable by default?
 
+  // plugins are enabled on load by default
+  if (opts.enableOnLoad) plugin.enable();
 
   return plugin;
 };
