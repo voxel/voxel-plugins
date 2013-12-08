@@ -18,8 +18,6 @@ function Plugins(game, opts) {
 
 // Loads a plugin instance
 Plugins.prototype.load = function(name, opts) {
-  console.log("loading plugin ",name,opts);
-  
   if (this.get(name)) {
     console.log("plugin already loaded: ", name);
     return false;
@@ -42,7 +40,7 @@ Plugins.prototype.load = function(name, opts) {
   plugin.pluginEnabled = false;
   this.pluginMap[name] = plugin;
 
-  console.log("loaded plugin ",name,plugin);
+  console.log("Loaded plugin",name,plugin);
 
   // plugins are enabled on load by default
   if (this.enableOnLoad) this.enable(plugin);
@@ -90,7 +88,6 @@ Plugins.prototype.listAll = function() {
 
 
 Plugins.prototype.enable = function(name) {
-  console.log("enabling plugin ",name);
   var plugin = this.get(name);
 
   if (!plugin) {
@@ -143,7 +140,6 @@ Plugins.prototype.disable = function(name) {
     }
   }
 
-  console.log("disabling X",plugin);
   plugin.pluginEnabled = false;
 
   // TODO: recursively disable dependants? or refuse to disable if has enabled dependants?
