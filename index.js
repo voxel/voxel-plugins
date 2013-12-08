@@ -134,6 +134,14 @@ Plugins.prototype.disable = function(name) {
   return true;
 };
 
+Plugins.prototype.toggle = function(name) {
+  if (this.isEnabled(name)) {
+    return this.disable(name);
+  } else {
+    return this.enable(name);
+  }
+};
+
 Plugins.prototype.unload = function(name) {
   var plugin = this.get(name);
 
