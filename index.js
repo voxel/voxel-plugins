@@ -12,6 +12,8 @@ function Plugins(game, opts) {
 
   // map plugin name to instances
   this.pluginMap = {};
+
+  this.preconfigureOpts = {};
 }
 
 // Loads a plugin instance
@@ -43,10 +45,16 @@ Plugins.prototype.load = function(name, opts) {
   console.log("loaded plugin ",name,plugin);
 
   // plugins are enabled on load by default
-  if (opts.enableOnLoad) plugin.enable();
+  if (this.enableOnLoad) this.enable(plugin);
 
   return plugin;
 };
+
+// Mark a plugin for on-demand loading in enable(), with given preconfigured options
+Plugins.prototype.preconfigure = function(name, opts) {
+  this.preconfigureOpts[name] = opts;
+};
+
 
 // Get a loaded plugin instance by name or instance
 Plugins.prototype.get = function(name) {
@@ -86,7 +94,13 @@ Plugins.prototype.enable = function(name) {
   var plugin = this.get(name);
 
   if (!plugin) {
-    console.log("no such plugin loaded to enable: ",plugin,name);
+    if (this.preconfigureOpts[name]) {
+      // on-demand loading, with prespecified options
+      return this.load(name, this.preconfigureOpts[name]);
+    } else {
+      console.log("no such plugin loaded to enable: ",plugin,name);
+    }
+
     return false;
   } else {
     if (plugin.pluginEnabled) {
