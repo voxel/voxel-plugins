@@ -1,3 +1,5 @@
+// # vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab:
+
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 
@@ -45,6 +47,7 @@ Plugins.prototype.load = function(name, opts) {
     return false;
   }
   plugin.pluginName = name;
+  this.emit('new plugin', name);
 
   // plugins are enabled on load -- assumed constructor calls its own enable() method (if present)
   plugin.pluginEnabled = true;
@@ -61,6 +64,8 @@ Plugins.prototype.load = function(name, opts) {
 // Mark a plugin for on-demand loading in enable(), with given preconfigured options
 Plugins.prototype.preconfigure = function(name, opts) {
   this.preconfigureOpts[name] = opts;
+  if (!this.get(name)) 
+    this.emit('new plugin', name);
 };
 
 
