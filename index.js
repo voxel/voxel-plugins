@@ -8,7 +8,6 @@ function Plugins(game, opts) {
 
   opts = opts || {};
   this.require = opts.require || require;
-  this.enableOnLoad = opts.enableOnLoad || true;
   this.namePrefix = opts.namePrefix || "voxel-";
 
   // map plugin name to instances
@@ -32,19 +31,25 @@ Plugins.prototype.load = function(name, opts) {
     return false;
   }
 
-  var plugin = createPlugin(this.game, opts); // requires (game, opts) convention
-  if (!plugin) {
-    console.log("create plugin failed:",name,createPlugin,plugin);
+  try {
+    var plugin = createPlugin(this.game, opts); // requires (game, opts) convention
+    if (!plugin) {
+      console.log("create plugin failed:",name,createPlugin,plugin);
+      return false;
+    }
+  } catch (e) {
+    console.log("create plugin failed with exception:",name,createPlugin,plugin,e);
     return false;
   }
   plugin.pluginName = name;
-  plugin.pluginEnabled = false;
+
+  // plugins are enabled on load -- assumed constructor calls its own enable() method (if present)
+  plugin.pluginEnabled = true;
+
   this.pluginMap[name] = plugin;
 
   console.log("Loaded plugin:",name,plugin);
 
-  // plugins are enabled on load by default
-  if (this.enableOnLoad) this.enable(plugin);
 
   return plugin;
 };
