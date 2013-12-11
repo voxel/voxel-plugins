@@ -1,3 +1,6 @@
+var EventEmitter = require('events').EventEmitter;
+var inherits = require('inherits');
+
 module.exports = function(game, opts) {
   return new Plugins(game, opts);
 };
@@ -45,6 +48,7 @@ Plugins.prototype.load = function(name, opts) {
 
   // plugins are enabled on load -- assumed constructor calls its own enable() method (if present)
   plugin.pluginEnabled = true;
+  this.emit('plugin enabled', name);
 
   this.pluginMap[name] = plugin;
 
@@ -120,6 +124,7 @@ Plugins.prototype.enable = function(name) {
       }
     }
     plugin.pluginEnabled = true;
+    this.emit('plugin enabled', name);
   }
   return true;
 };
@@ -147,6 +152,7 @@ Plugins.prototype.disable = function(name) {
   }
 
   plugin.pluginEnabled = false;
+  this.emit('plugin disabled', name);
 
   // TODO: recursively disable dependants? or refuse to disable if has enabled dependants?
   return true;
@@ -181,3 +187,5 @@ Plugins.prototype.unload = function(name) {
 
   return true;
 };
+
+inherits(Plugins, EventEmitter);
