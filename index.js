@@ -16,7 +16,7 @@ function Plugins(game, opts) {
   this.namePrefix = opts.namePrefix || "voxel-";
 
   // map plugin name to instances
-  this.pluginMap = {};
+  this.all = {};
 
   this.preconfigureOpts = {};
 }
@@ -53,7 +53,7 @@ Plugins.prototype.load = function(name, opts) {
   plugin.pluginEnabled = true;
   this.emit('plugin enabled', name);
 
-  this.pluginMap[name] = plugin;
+  this.all[name] = plugin;
 
   console.log("Loaded plugin:",name,plugin);
 
@@ -72,7 +72,7 @@ Plugins.prototype.preconfigure = function(name, opts) {
 // Get a loaded plugin instance by name or instance
 Plugins.prototype.get = function(name) {
   if (typeof name === "string")
-    return this.pluginMap[name];
+    return this.all[name];
   else
     // assume it is a plugin instance already, return as-is
     return name;
@@ -87,7 +87,7 @@ Plugins.prototype.isEnabled = function(name) {
 Plugins.prototype.isLoaded = function(name) {
   var plugin = this.get(name);
 
-  return !!(plugin && plugin.pluginName && this.pluginMap[plugin.pluginName]);
+  return !!(plugin && plugin.pluginName && this.all[plugin.pluginName]);
 };
 
 // Get list of enabled plugins
@@ -98,7 +98,7 @@ Plugins.prototype.list = function() {
 
 // Get list of all plugins
 Plugins.prototype.listAll = function() {
-  return Object.keys(this.pluginMap);
+  return Object.keys(this.all);
 };
 
 
@@ -179,7 +179,7 @@ Plugins.prototype.unload = function(name) {
     return false;
   }
 
-  if (!this.pluginMap[plugin.pluginName]) {
+  if (!this.all[plugin.pluginName]) {
     console.log("no such plugin to unload: ",plugin);
     return false;
   }
@@ -187,7 +187,7 @@ Plugins.prototype.unload = function(name) {
   if (this.isEnabled(plugin))
     this.disable(plugin);
 
-  delete this.pluginMap[plugin.pluginName];
+  delete this.all[plugin.pluginName];
   console.log("unloaded ",plugin);
 
   return true;
