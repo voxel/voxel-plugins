@@ -36,16 +36,16 @@ Plugins.prototype.load = function(name, opts) {
     return false;
   }
 
-  try {
+  //try {
     var plugin = createPlugin(this.game, opts); // requires (game, opts) convention
     if (!plugin) {
       console.log("create plugin failed:",name,createPlugin,plugin);
       return false;
     }
-  } catch (e) {
+  /*} catch (e) {
     console.log("create plugin failed with exception:",name,createPlugin,plugin,e);
     return false;
-  }
+  }*/
   plugin.pluginName = name;
   this.emit('new plugin', name);
 
@@ -121,12 +121,12 @@ Plugins.prototype.enable = function(name) {
     }
 
     if (plugin.enable) {
-      try {
+      //try {
         plugin.enable();
-      } catch(e) {
+      /*} catch(e) {
         console.log("failed to enable:",plugin,name,e);
         return false;
-      }
+      }*/
     }
     plugin.pluginEnabled = true;
     this.emit('plugin enabled', name);
@@ -148,12 +148,12 @@ Plugins.prototype.disable = function(name) {
   }
 
   if (plugin.disable) {
-    try {
+    //try {
       plugin.disable(); 
-    } catch (e) {
+    /*} catch (e) {
       console.log("failed to disable:",plugin,name,e);
       return false;
-    }
+    }*/
   }
 
   plugin.pluginEnabled = false;
