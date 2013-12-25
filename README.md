@@ -1,6 +1,6 @@
 # voxel-plugins
 
-An API for plugins in voxel.js.
+An API for loading and enabling plugins in voxel.js.
 
 ## Basic plugin API
 
@@ -50,6 +50,15 @@ Once you have written a "plugin" conforming to this API, how do you use it? Plug
 
 But with voxel-plugins, you can instead use load(), enable(), disable(), toggle(), list(), etc. to easily manage your plugins
 (see the source for details).
+
+## Implementing your plugin
+
+voxel-plugins only handles loading and enabling/disabling plugins. 
+
+To implement the actual functionality of your plugin (modifying the game, etc.), you 
+can use the voxel-engine APIs (instance passed in the `game` parameter), or other plugin APIs.
+voxel-plugins itself is available in `game.plugins`. See also [voxel-registry](https://github.com/deathcap/voxel-registry)
+for adding new game content.
 
 ## License
 
