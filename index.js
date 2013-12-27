@@ -14,7 +14,6 @@ function Plugins(game, opts) {
 
   opts = opts || {};
   this.require = opts.require || require;
-  this.namePrefix = opts.namePrefix || "voxel-";
 
   // map plugin name to instances
   this.all = {};
@@ -30,9 +29,7 @@ function Plugins(game, opts) {
 // Require the plugin module and return its factory constructor
 // This does not construct the plugin instance, for that see load()
 Plugins.prototype.scan = function(name) {
-  var requireName = name.substr(0, 1) !== '!' ? this.namePrefix + name : name.substring(1);
-
-  var createPlugin = this.require(requireName);   // factory for constructor
+  var createPlugin = this.require(name);   // factory for constructor
 
   return createPlugin;
 };
