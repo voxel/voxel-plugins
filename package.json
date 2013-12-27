@@ -1,15 +1,16 @@
 {
-    "name": "voxel-plugins",
-    "description": "dynamically load plugins for voxel-engine",
-    "version": "0.0.1",
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:deathcap/voxel-plugins.git"
-    },
-    "dependencies": {
-        "inherits": "1.0.0"
-    },
-    "peerDependencies": {
-        "voxel-engine": ">=0.19.0"
-    }
+  "name": "voxel-plugins",
+  "description": "dynamically load plugins for voxel-engine",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:deathcap/voxel-plugins.git"
+  },
+  "dependencies": {
+    "inherits": "1.0.0",
+    "tsort": "0.0.1"
+  },
+  "peerDependencies": {
+    "voxel-engine": ">=0.19.0"
+  }
 }
