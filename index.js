@@ -84,13 +84,13 @@ Plugins.prototype.preconfigure = function(name, opts) {
     this.emit('new plugin', name);
 }
 
-// Scan a plugin for ordered loading and preconfigure with given options
-Plugins.prototype.preload = function(name, opts) {
-  if (!opts) throw 'voxel-plugins preload('+name+'): missing required options'; // TODO: from file? previous preconfigure()?
+// Add a plugin for loading: scan for ordered loading and preconfigure with given options
+Plugins.prototype.add = function(name, opts) {
+  if (!opts && !this.preconfiguredOpts[name]) throw 'voxel-plugins preload('+name+'): missing required options and not preconfigured';
 
   var createPlugin = this.scan(name);
   if (!createPlugin)
-    return false; // TODO: do we need a way to preconfigure unscannable plugins? (probably)
+    return false;
 
   this.buildGraph(createPlugin, name);
 
@@ -116,8 +116,8 @@ Plugins.prototype.buildGraph = function(createPlugin, name) {
     this.graph.add(loadAfter[i], name);
 };
 
-// Load preload()'d plugins in order sorted by pluginInfo
-Plugins.prototype.loadOrderly = function() {
+// Load add()'d plugins in order sorted by pluginInfo
+Plugins.prototype.loadAll = function() {
   // topological sort by loadAfter dependency order
   var sortedPluginNames = this.graph.sort();
 
