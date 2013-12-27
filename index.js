@@ -21,6 +21,10 @@ function Plugins(game, opts) {
 
   this.preconfigureOpts = {};
   this.graph = tsort();
+
+  // self plugin
+  this.all.plugins = this;
+  this.pluginEnabled = true;
 }
 
 // Require the plugin module and return its factory constructor
@@ -81,7 +85,6 @@ Plugins.prototype.preconfigure = function(name, opts) {
     this.emit('new plugin', name);
 }
 
-
 // Scan a plugin for ordered loading and preconfigure with given options
 Plugins.prototype.preload = function(name, opts) {
   if (!opts) throw 'voxel-plugins preload('+name+'): missing required options'; // TODO: from file? previous preconfigure()?
@@ -90,18 +93,28 @@ Plugins.prototype.preload = function(name, opts) {
   if (!createPlugin)
     return false; // TODO: do we need a way to preconfigure unscannable plugins? (probably)
 
-  if (createPlugin.pluginInfo) { // TODO: check object
-    var loadAfter = createPlugin.pluginInfo.loadAfter; // TODO: check array
-
-    if (!loadAfter) loadAfter = [];
-
-    // add edges for each plugin required to load before us
-    for (var i = 0; i < loadAfter.length; ++i)
-      this.graph.add(loadAfter[i], name);
-  }
+  this.buildGraph(createPlugin, name);
 
   // save options to load with
   this.preconfigure(name, opts);
+};
+
+Plugins.prototype.buildGraph = function(createPlugin, name) {
+  var loadAfter = [];
+
+  if (createPlugin.pluginInfo) {
+    loadAfter = createPlugin.pluginInfo.loadAfter;
+
+    if (!loadAfter) loadAfter = [];
+  }
+
+  // special 'plugin' us, everything always loads after
+  // (mainly added so all plugins are in the graph, even with empty loadAfter)
+  loadAfter.unshift('plugins');
+
+  // add edges for each plugin required to load before us
+  for (var i = 0; i < loadAfter.length; ++i)
+    this.graph.add(loadAfter[i], name);
 };
 
 // Load preload()'d plugins in order sorted by pluginInfo
@@ -110,7 +123,6 @@ Plugins.prototype.loadOrderly = function() {
   var sortedPluginNames = this.graph.sort();
 
   console.log('sortedPluginNames:'+JSON.stringify(sortedPluginNames));
-  console.log('preconfigureOpts:'+JSON.stringify(this.preconfigureOpts));
   for (var i = 0; i < sortedPluginNames.length; ++i) {
     var name = sortedPluginNames[i];
 
