@@ -15,7 +15,7 @@ You can now add as many plugins as you want, as follows:
 
 giving the plugin name and an options object. The name should be `require()`-able module, and
 the options are plugin-specific (for a bunch of available plugins, see my
-[repositories](https://github.com/deathcap/voxel-harvest)). Adding plugins will perform the require,
+[repositories](https://github.com/deathcap?tab=repositories)). Adding plugins will perform the require,
 examine the optional pluginInfo for dependency ordering, build up the loading graph, and save the
 options, but not yet instantiate the plugin objects.
 
