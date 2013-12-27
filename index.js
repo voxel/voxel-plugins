@@ -2,6 +2,7 @@
 
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
+var tsort = require('tsort');
 
 module.exports = function(game, opts) {
   return new Plugins(game, opts);
@@ -19,9 +20,18 @@ function Plugins(game, opts) {
   this.all = {};
 
   this.preconfigureOpts = {};
+  this.graph = tsort();
 }
 
-// Loads a plugin instance
+// Require the plugin module and return its factory constructor
+// This does not construct the plugin instance, for that see load()
+Plugins.prototype.scan = function(name) {
+  var createPlugin = this.require(this.namePrefix + name);   // factory for constructor
+
+  return createPlugin;
+};
+
+// Loads a plugin, creating its instance (starts out enabled)
 Plugins.prototype.load = function(name, opts) {
   if (this.get(name)) {
     console.log("plugin already loaded: ", name);
@@ -29,8 +39,9 @@ Plugins.prototype.load = function(name, opts) {
   }
 
   opts = opts || {};
-  
-  var createPlugin = this.require(this.namePrefix + name);   // factory for constructor
+ 
+  var createPlugin = this.scan(name);
+
   if (!createPlugin) {
     console.log("plugin not found: ",name);
     return false;
@@ -62,10 +73,50 @@ Plugins.prototype.load = function(name, opts) {
 };
 
 // Mark a plugin for on-demand loading in enable(), with given preconfigured options
+// (The plugin does not have to exist yet)
 Plugins.prototype.preconfigure = function(name, opts) {
   this.preconfigureOpts[name] = opts;
+  
   if (!this.get(name)) 
     this.emit('new plugin', name);
+}
+
+
+// Scan a plugin for ordered loading and preconfigure with given options
+Plugins.prototype.preload = function(name, opts) {
+  if (!opts) throw 'voxel-plugins preload('+name+'): missing required options'; // TODO: from file? previous preconfigure()?
+
+  var createPlugin = this.scan(name);
+  if (!createPlugin)
+    return false; // TODO: do we need a way to preconfigure unscannable plugins? (probably)
+
+  if (createPlugin.pluginInfo) { // TODO: check object
+    var loadAfter = createPlugin.pluginInfo.loadAfter; // TODO: check array
+
+    if (!loadAfter) loadAfter = [];
+
+    // add edges for each plugin required to load before us
+    for (var i = 0; i < loadAfter.length; ++i)
+      this.graph.add(loadAfter[i], name);
+  }
+
+  // save options to load with
+  this.preconfigure(name, opts);
+};
+
+// Load preload()'d plugins in order sorted by pluginInfo
+Plugins.prototype.loadOrderly = function() {
+  // topological sort by loadAfter dependency order
+  var sortedPluginNames = this.graph.sort();
+
+  console.log('sortedPluginNames:'+JSON.stringify(sortedPluginNames));
+  console.log('preconfigureOpts:'+JSON.stringify(this.preconfigureOpts));
+  for (var i = 0; i < sortedPluginNames.length; ++i) {
+    var name = sortedPluginNames[i];
+
+    if (!this.isEnabled(name))
+      this.enable(name); // will load() since preconfigured
+  }
 };
 
 
