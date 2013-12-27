@@ -30,7 +30,9 @@ function Plugins(game, opts) {
 // Require the plugin module and return its factory constructor
 // This does not construct the plugin instance, for that see load()
 Plugins.prototype.scan = function(name) {
-  var createPlugin = this.require(this.namePrefix + name);   // factory for constructor
+  var requireName = name.substr(0, 1) !== '!' ? this.namePrefix + name : name.substring(1);
+
+  var createPlugin = this.require(requireName);   // factory for constructor
 
   return createPlugin;
 };
