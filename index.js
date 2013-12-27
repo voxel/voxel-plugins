@@ -27,17 +27,17 @@ function Plugins(game, opts) {
 }
 
 // Require the plugin module and return its factory constructor
-// This does not construct the plugin instance, for that see load()
+// This does not construct the plugin instance, for that see instantiate()
 Plugins.prototype.scan = function(name) {
   var createPlugin = this.require(name);   // factory for constructor
 
   return createPlugin;
 };
 
-// Loads a plugin, creating its instance (starts out enabled)
-Plugins.prototype.load = function(name, opts) {
+// Instantiate a plugin, creating its instance (starts out enabled)
+Plugins.prototype.instantiate = function(name, opts) {
   if (this.get(name)) {
-    console.log("plugin already loaded: ", name);
+    console.log("plugin already constructed: ", name);
     return false;
   }
 
@@ -63,13 +63,13 @@ Plugins.prototype.load = function(name, opts) {
   plugin.pluginName = name;
   this.emit('new plugin', name);
 
-  // plugins are enabled on load -- assumed constructor calls its own enable() method (if present)
+  // plugins are enabled on instantiation -- assumed constructor calls its own enable() method (if present)
   plugin.pluginEnabled = true;
   this.emit('plugin enabled', name);
 
   this.all[name] = plugin;
 
-  console.log("Loaded plugin:",name,plugin);
+  console.log("Instantiated plugin:",name,plugin);
 
 
   return plugin;
@@ -126,12 +126,12 @@ Plugins.prototype.loadOrderly = function() {
     var name = sortedPluginNames[i];
 
     if (!this.isEnabled(name))
-      this.enable(name); // will load() since preconfigured
+      this.enable(name); // will instantiate() since preconfigured
   }
 };
 
 
-// Get a loaded plugin instance by name or instance
+// Get an instantiated plugin instance by name or instance
 Plugins.prototype.get = function(name) {
   if (typeof name === "string")
     return this.all[name];
@@ -169,8 +169,8 @@ Plugins.prototype.enable = function(name) {
 
   if (!plugin) {
     if (this.preconfigureOpts[name]) {
-      // on-demand loading, with prespecified options
-      return this.load(name, this.preconfigureOpts[name]);
+      // on-demand instantiation, with prespecified options
+      return this.instantiate(name, this.preconfigureOpts[name]);
     } else {
       console.log("no such plugin loaded to enable: ",plugin,name);
     }
@@ -233,7 +233,7 @@ Plugins.prototype.toggle = function(name) {
   }
 };
 
-Plugins.prototype.unload = function(name) {
+Plugins.prototype.destroy = function(name) {
   var plugin = this.get(name);
 
   if (!plugin) {
@@ -242,7 +242,7 @@ Plugins.prototype.unload = function(name) {
   }
 
   if (!this.all[plugin.pluginName]) {
-    console.log("no such plugin to unload: ",plugin);
+    console.log("no such plugin to destroy: ",plugin);
     return false;
   }
 
@@ -250,7 +250,7 @@ Plugins.prototype.unload = function(name) {
     this.disable(plugin);
 
   delete this.all[plugin.pluginName];
-  console.log("unloaded ",plugin);
+  console.log("destroyed  ",plugin);
 
   return true;
 };
