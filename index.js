@@ -77,6 +77,7 @@ Plugins.prototype.instantiate = function(name, opts) {
 
 // Mark a plugin for on-demand loading in enable(), with given preconfigured options
 // (The plugin does not have to exist yet)
+// The saved configuration is also used in add(), if available
 Plugins.prototype.preconfigure = function(name, opts) {
   this.preconfigureOpts[name] = opts;
   
