@@ -86,8 +86,10 @@ Plugins.prototype.preconfigure = function(name, opts) {
 }
 
 // Add a plugin for loading: scan for ordered loading and preconfigure with given options
+// Special case: if the 'onDemand' option is set, the plugin won't be scanned at all, instead the pass configuration will be saved
 Plugins.prototype.add = function(name, opts) {
   if (!opts && !this.preconfiguredOpts[name]) throw 'voxel-plugins preload('+name+'): missing required options and not preconfigured';
+  if (opts.onDemand) return this.preconfigure(name, opts);
 
   var createPlugin = this.scan(name);
   if (!createPlugin)
