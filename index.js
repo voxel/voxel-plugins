@@ -52,6 +52,10 @@ Plugins.prototype.instantiate = function(name, opts) {
     // the 'master' plugin is the game object itself
     this.game = plugin = createPlugin(opts);
     this.game.plugins = this;
+    if (this.game.notCapable()) {
+      if (window.document) window.document.body.appendChild(this.game.notCapableMessage()); // TODO: find out why notCapable() isn't showing up
+      throw new Error('[voxel-plugins] fatal error: your system is not capable of running voxel-engine (game.notCapable)');
+    }
   } else {
     plugin = createPlugin(this.game, opts); // requires (game, opts) convention
     if (!plugin) {
