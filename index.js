@@ -10,20 +10,17 @@ module.exports = function(game, opts) {
 
 function Plugins(game, opts) {
   this.game = game;
-  this.game.plugins = this;
+  if (this.game) this.game.plugins = this;
 
   opts = opts || {};
   this.require = opts.require || require;
+  this.masterPluginName = opts.masterPluginName || 'voxel-engine'; // synthetic 'plugin' created as parent of all
 
   // map plugin name to instances
   this.all = {};
 
   this.preconfigureOpts = {};
   this.graph = tsort();
-
-  // self plugin
-  this.all.plugins = this;
-  this.pluginEnabled = true;
 }
 
 // Require the plugin module and return its factory constructor
@@ -37,7 +34,7 @@ Plugins.prototype.scan = function(name) {
 // Instantiate a plugin, creating its instance (starts out enabled)
 Plugins.prototype.instantiate = function(name, opts) {
   if (this.get(name)) {
-    console.log("plugin already constructed: ", name);
+    console.log("plugin already instantiated: ", name);
     return false;
   }
 
@@ -50,16 +47,19 @@ Plugins.prototype.instantiate = function(name, opts) {
     return false;
   }
 
-  //try {
-    var plugin = createPlugin(this.game, opts); // requires (game, opts) convention
+  var plugin;
+  if (!this.game && name === this.masterPluginName) {
+    // the 'master' plugin is the game object itself
+    this.game = plugin = createPlugin(opts);
+    this.game.plugins = this;
+  } else {
+    plugin = createPlugin(this.game, opts); // requires (game, opts) convention
     if (!plugin) {
       console.log("create plugin failed:",name,createPlugin,plugin);
       return false;
     }
-  /*} catch (e) {
-    console.log("create plugin failed with exception:",name,createPlugin,plugin,e);
-    return false;
-  }*/
+  }
+
   plugin.pluginName = name;
   this.emit('new plugin', name);
 
@@ -110,9 +110,9 @@ Plugins.prototype.buildGraph = function(createPlugin, name) {
     if (!loadAfter) loadAfter = [];
   }
 
-  // special 'plugin' us, everything always loads after
+  // special master plugin, everything always loads after
   // (mainly added so all plugins are in the graph, even with empty loadAfter)
-  loadAfter.unshift('plugins');
+  if (name !== this.masterPluginName) loadAfter.unshift(this.masterPluginName);
 
   // add edges for each plugin required to load before us
   for (var i = 0; i < loadAfter.length; ++i)
