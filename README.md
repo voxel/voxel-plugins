@@ -4,6 +4,8 @@ An API for loading and enabling plugins in voxel.js with support for soft depend
 
 For a list of available plugins, see [the wiki](https://github.com/deathcap/voxel-plugins/wiki).
 
+[![Build Status](https://travis-ci.org/deathcap/voxel-plugins.png)](https://travis-ci.org/deathcap/voxel-plugins)
+
 ## Loading plugins
 
 First construct the plugin system:
