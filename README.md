@@ -38,6 +38,7 @@ and the plugins can be queried like so:
     console.log(plugins.list());
     var pluginInstance = plugins.get('foo');
 
+
 ## Plugin development
 
 ### Construction
