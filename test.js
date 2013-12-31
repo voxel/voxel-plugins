@@ -15,6 +15,8 @@ function createPluginFoo(game, opts) {
 
 function PluginBar(game, opts) {
   console.log('PluginBar loading');
+
+  this.myfoo = game.plugins.get('foo');
 }
 
 function createPluginBar(game, opts) {
@@ -62,4 +64,25 @@ test('plugin add fail missing opts', function(t) {
   t.equals(caughtError !== undefined, true);
   t.end();
 });
+
+test('loadAfter', function(t) {
+  var plugins = createPlugins(new FakeGame(), {require:fakeRequire});
+
+  plugins.add('foo', {});
+  plugins.add('bar', {});
+  plugins.loadAll();
+
+  // try reversed too, should have same order because of loadAfter
+  var rplugins = createPlugins(new FakeGame(), {require:fakeRequire});
+  rplugins.add('bar', {});
+  rplugins.add('foo', {});
+  rplugins.loadAll();
+
+  // ensure PluginBar was able to get its PluginFoo instance, as foo was loaded before bar
+  t.equal(plugins.get('bar').myfoo, plugins.get('foo'));
+  t.equal(rplugins.get('bar').myfoo, rplugins.get('foo'));
+
+  t.end();
+});
+
 
