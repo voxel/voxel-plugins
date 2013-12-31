@@ -177,7 +177,8 @@ Plugins.prototype.enable = function(name) {
       // on-demand instantiation, with prespecified options
       return this.instantiate(name, this.preconfigureOpts[name]);
     } else {
-      console.log("no such plugin loaded to enable: ",plugin,name);
+      if (name !== this.masterPluginName) // ignore missing master plugin, as it is optional
+        console.log("no such plugin loaded to enable: ",plugin,name);
     }
 
     return false;
