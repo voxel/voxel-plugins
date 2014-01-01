@@ -72,13 +72,28 @@ test('enable/disable', function(t) {
   plugins.add('foo', {});
   plugins.loadAll();
 
-  t.equals(plugins.isEnabled('foo'), true);
+  t.equals(plugins.isEnabled('foo'), true); // starts enabled
   plugins.disable('foo');
   t.equals(plugins.isEnabled('foo'), false);
   plugins.enable('foo');
   t.equals(plugins.isEnabled('foo'), true);
   plugins.disable('foo');
   t.equals(plugins.isEnabled('foo'), false);
+
+  t.end();
+});
+
+test('on demand', function(t) {
+  var plugins = createPlugins(new FakeGame(), {require:fakeRequire});
+ 
+  plugins.add('foo', {onDemand: true});
+  plugins.loadAll();
+
+  t.equals(plugins.get('foo') === undefined, true);  // doesn't exist yet
+
+  plugins.enable('foo');
+  t.equals(plugins.get('foo') !== undefined, true);
+  t.equals(plugins.isEnabled('foo'), true);
 
   t.end();
 });
