@@ -55,14 +55,10 @@ test('plugin add simple', function(t) {
 test('plugin add fail missing opts', function(t) {
   var plugins = createPlugins(new FakeGame(), {require:fakeRequire});
 
-  var caughtError;
-  try {
+  t.throws(function() {
     plugins.add('foo'); // options are mandatory
-  } catch (e) {
-    caughtError = e;
-  }
+  });
 
-  t.equals(caughtError !== undefined, true);
   t.end();
 });
 
