@@ -1,3 +1,4 @@
+'use strict';
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 var tsort = require('tsort');
@@ -85,7 +86,7 @@ Plugins.prototype.preconfigure = function(name, opts) {
   
   if (!this.get(name)) 
     this.emit('new plugin', name);
-}
+};
 
 // Add a plugin for loading: scan for ordered loading and preconfigure with given options
 // Special case: if the 'onDemand' option is set, the plugin won't be scanned at all, instead the pass configuration will be saved
