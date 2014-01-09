@@ -18,7 +18,7 @@ function Plugins(game, opts) {
   // map plugin name to instances
   this.all = {};
 
-  this.preconfigureOpts = {};
+  this.savedOpts = {};
   this.graph = tsort();
 }
 
@@ -82,7 +82,7 @@ Plugins.prototype.instantiate = function(name, opts) {
 // (The plugin does not have to exist yet)
 // The saved configuration is also used in add(), if available
 Plugins.prototype.preconfigure = function(name, opts) {
-  this.preconfigureOpts[name] = opts;
+  this.savedOpts[name] = opts;
   
   if (!this.get(name)) 
     this.emit('new plugin', name);
@@ -91,7 +91,7 @@ Plugins.prototype.preconfigure = function(name, opts) {
 // Add a plugin for loading: scan for ordered loading and preconfigure with given options
 // Special case: if the 'onDemand' option is set, the plugin won't be scanned at all, instead the pass configuration will be saved
 Plugins.prototype.add = function(name, opts) {
-  if (!opts && !this.preconfigureOpts[name]) throw 'voxel-plugins preload('+name+'): missing required options and not preconfigured';
+  if (!opts && !this.savedOpts[name]) throw 'voxel-plugins preload('+name+'): missing required options and not preconfigured';
   if (opts.onDemand) return this.preconfigure(name, opts);
 
   var createPlugin = this.scan(name);
@@ -174,9 +174,9 @@ Plugins.prototype.enable = function(name) {
   var plugin = this.get(name);
 
   if (!plugin) {
-    if (this.preconfigureOpts[name]) {
+    if (this.savedOpts[name]) {
       // on-demand instantiation, with prespecified options
-      return this.instantiate(name, this.preconfigureOpts[name]);
+      return this.instantiate(name, this.savedOpts[name]);
     } else {
       if (name !== this.masterPluginName) // ignore missing master plugin, as it is optional
         console.log("no such plugin loaded to enable: ",plugin,name);
