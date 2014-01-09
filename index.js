@@ -165,7 +165,12 @@ Plugins.prototype.list = function() {
 
 // Get list of all plugins
 Plugins.prototype.listAll = function() {
-  return Object.keys(this.all);
+  var loaded = Object.keys(this.all);
+  var unloaded = Object.keys(this.savedOpts).filter(function(x) {
+    return loaded.indexOf(x) == -1;
+  });
+
+  return loaded.concat(unloaded);
 };
 
 
