@@ -160,8 +160,7 @@ Plugins.prototype.isLoaded = function(name) {
 
 // Get list of enabled plugins
 Plugins.prototype.list = function() {
-  var self = this;
-  return this.listAll().filter(function(plugin) { return self.isEnabled(plugin); });
+  return this.listAll().filter(this.isEnabled.bind(this));
 };
 
 // Get list of all plugins
