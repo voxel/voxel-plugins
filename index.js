@@ -30,8 +30,8 @@ Plugins.prototype.scan = function(name) {
   return createPlugin;
 };
 
-// Instantiate a plugin, creating its instance (starts out enabled)
-Plugins.prototype.instantiate = function(name, opts) {
+// Scan then instantiate a plugin by name, creating its instance (starts out enabled)
+Plugins.prototype.scanAndInstantiate = function(name, opts) {
   if (this.get(name)) {
     console.log("plugin already instantiated: ", name);
     return false;
@@ -46,6 +46,11 @@ Plugins.prototype.instantiate = function(name, opts) {
     return false;
   }
 
+  return this.instantiate(createPlugin, name, opts);
+};
+
+// Instantiate a plugin given factory constructor, creating its instance (starts out enabled)
+Plugins.prototype.instantiate = function(createPlugin, name, opts) {
   var plugin;
   if (!this.game && name === this.masterPluginName) {
     // the 'master' plugin is the game object itself
@@ -180,7 +185,7 @@ Plugins.prototype.enable = function(name) {
   if (!plugin) {
     if (this.savedOpts[name]) {
       // on-demand instantiation, with prespecified options
-      return this.instantiate(name, this.savedOpts[name]);
+      return this.scanAndInstantiate(name, this.savedOpts[name]);
     } else {
       if (name !== this.masterPluginName) // ignore missing master plugin, as it is optional
         console.log("no such plugin loaded to enable: ",plugin,name);
