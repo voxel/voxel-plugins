@@ -43,7 +43,7 @@ Plugins.prototype.scanAndInstantiate = function(name, opts) {
 
   if (createPlugin.pluginInfo && createPlugin.pluginInfo.clientOnly) {
     if (!this.game.isClient) {
-      console.log("skipping client-only plugin ("+name+"), in non-client environment");
+      console.log("Skipping client-only plugin ("+name+"), in non-client environment");
       return false;
     }
   }
@@ -84,7 +84,8 @@ Plugins.prototype.instantiate = function(createPlugin, name, opts) {
 
   this.all[name] = plugin;
 
-  console.log("Instantiated plugin:",name,plugin);
+  //console.log("Instantiated plugin:",name,plugin);
+  console.log("Instantiated plugin:",name);
 
 
   return plugin;
