@@ -13,7 +13,7 @@ function Plugins(game, opts) {
 
   opts = opts || {};
   this.require = opts.require || require;
-  this.catchExceptions = true;
+  this.catchExceptions = false;
   this.masterPluginName = opts.masterPluginName || 'voxel-engine'; // synthetic 'plugin' created as parent of all
 
   // map plugin name to instances
