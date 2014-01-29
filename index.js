@@ -234,7 +234,7 @@ Plugins.prototype.enable = function(name) {
       if (!this.wrapExceptions(function() {
         plugin.enable();
       })) {
-        console.log("failed to enable:",plugin,name,e);
+        console.log("failed to enable:",plugin,name);
         return false;
       }
     }
@@ -261,7 +261,7 @@ Plugins.prototype.disable = function(name) {
     if (!this.wrapExceptions(function() {
       plugin.disable(); 
     })) {
-      console.log("failed to disable:",plugin,name,e);
+      console.log("failed to disable:",plugin,name);
       return false;
     }
   }
