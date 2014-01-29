@@ -13,8 +13,8 @@ function Plugins(game, opts) {
 
   opts = opts || {};
   this.require = opts.require || require;
-  this.masterPluginName = opts.masterPluginName || 'voxel-cs'; // synthetic 'plugin' created as parent of all
   this.catchExceptions = true;
+  this.masterPluginName = opts.masterPluginName || 'voxel-engine'; // synthetic 'plugin' created as parent of all
 
   // map plugin name to instances
   this.all = {};
@@ -85,10 +85,13 @@ Plugins.prototype.scanAndInstantiate = function(name, opts) {
 Plugins.prototype.instantiate = function(createPlugin, name, opts) {
   var plugin;
   if (!this.game && name === this.masterPluginName) {
-    // the 'master' plugin provides the game object itself
-    plugin = createPlugin(opts);
-    this.game = {}; // TODO: provide link to voxel-engine.. but client/server?
+    // the 'master' plugin is the game object itself
+    this.game = plugin = createPlugin(opts);
     this.game.plugins = this;
+    if (process.browser && this.game.notCapable()) {
+      if (window.document) window.document.body.appendChild(this.game.notCapableMessage()); // TODO: find out why notCapable() isn't showing up
+      throw new Error('[voxel-plugins] fatal error: your system is not capable of running voxel-engine (game.notCapable)');
+    }
   } else {
     plugin = createPlugin(this.game, opts); // requires (game, opts) convention
     if (!plugin) {
