@@ -14,12 +14,31 @@ function Plugins(game, opts) {
   opts = opts || {};
   this.require = opts.require || require;
   this.masterPluginName = opts.masterPluginName || 'voxel-cs'; // synthetic 'plugin' created as parent of all
+  this.catchExceptions = true;
 
   // map plugin name to instances
   this.all = {};
 
   this.savedOpts = {};
   this.graph = tsort();
+}
+
+Plugins.prototype.wrapExceptions = function(f) {
+  var ret;
+
+  if (!this.catchExceptions) {
+    ret = f();
+    return ret === undefined ? true : ret; // undefined ok
+  }
+
+  try {
+    ret = f();
+  } catch (e) {
+    console.log('caught exception:',e,'calling',f);
+    console.trace();
+    return false;
+  }
+  return ret === undefined ? true : ret;
 }
 
 // Require the plugin module and return its factory constructor
@@ -53,7 +72,12 @@ Plugins.prototype.scanAndInstantiate = function(name, opts) {
     return false;
   }
 
-  return this.instantiate(createPlugin, name, opts);
+  var self = this;
+  if (!this.wrapExceptions(function() {
+    return self.instantiate(createPlugin, name, opts);
+  })) {
+    console.log("failed to instantiate ",name);
+  }
 };
 
 // Instantiate a plugin given factory constructor, creating its instance (starts out enabled)
@@ -204,12 +228,12 @@ Plugins.prototype.enable = function(name) {
     }
 
     if (plugin.enable) {
-      //try {
+      if (!this.wrapExceptions(function() {
         plugin.enable();
-      /*} catch(e) {
+      })) {
         console.log("failed to enable:",plugin,name,e);
         return false;
-      }*/
+      }
     }
     plugin.pluginEnabled = true;
     this.emit('plugin enabled', name);
@@ -231,12 +255,12 @@ Plugins.prototype.disable = function(name) {
   }
 
   if (plugin.disable) {
-    //try {
+    if (!this.wrapExceptions(function() {
       plugin.disable(); 
-    /*} catch (e) {
+    })) {
       console.log("failed to disable:",plugin,name,e);
       return false;
-    }*/
+    }
   }
 
   plugin.pluginEnabled = false;
