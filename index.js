@@ -67,6 +67,11 @@ Plugins.prototype.scanAndInstantiate = function(name, opts) {
     }
   }
 
+  if (this.game && this.masterPluginName === name) {
+    console.log("Skipping already-loaded master plugin: " + this.masterPluginName);
+    return false;
+  }
+
   if (!createPlugin) {
     console.log("plugin not found: ",name);
     return false;
