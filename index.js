@@ -83,6 +83,8 @@ Plugins.prototype.scanAndInstantiate = function(name, opts) {
   })) {
     console.log("failed to instantiate ",name);
   }
+
+  return true;
 };
 
 // Instantiate a plugin given factory constructor, creating its instance (starts out enabled)
