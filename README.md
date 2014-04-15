@@ -67,7 +67,7 @@ To support it, just implement enable() and disable() methods, and call enable() 
         // initialization and setup here
 
         // must call enable() in your constructor
-        enable();
+        this.enable();
     }
 
     Foo.prototype.enable = function() {
