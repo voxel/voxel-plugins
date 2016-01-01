@@ -5,7 +5,7 @@
   "main": "plugins.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:deathcap/voxel-plugins.git"
+    "url": "git@github.com:voxel/voxel-plugins.git"
   },
   "keywords": [
     "voxel",
