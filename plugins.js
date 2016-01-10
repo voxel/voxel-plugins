@@ -8,6 +8,8 @@ module.exports = function(game, opts) {
 };
 
 function Plugins(game, opts) {
+  EventEmitter.call(this);
+
   this.game = game;
   if (this.game) this.game.plugins = this;
 
@@ -22,6 +24,8 @@ function Plugins(game, opts) {
   this.savedOpts = {};
   this.graph = tsort();
 }
+
+inherits(Plugins, EventEmitter);
 
 Plugins.prototype.wrapExceptions = function(f) {
   var ret;
@@ -309,5 +313,3 @@ Plugins.prototype.destroy = function(name) {
 
   return true;
 };
-
-inherits(Plugins, EventEmitter);

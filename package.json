@@ -13,11 +13,11 @@
     "voxel-plugins"
   ],
   "dependencies": {
-    "inherits": "1.0.0",
+    "inherits": "^2.0.1",
     "tsort": "0.0.1"
   },
   "devDependencies": {
-    "tape": "2.3.0"
+    "tape": "^4.4.0"
   },
   "scripts": {
     "test": "node test.js"
