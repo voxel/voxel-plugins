@@ -52,6 +52,20 @@ test('plugin add simple', function(t) {
   t.end();
 });
 
+test('plugin add simple loaders', function(t) {
+  var plugins = createPlugins(new FakeGame(), {loaders: {
+    foo: createPluginFoo,
+    bar: createPluginBar}});
+
+  plugins.add('foo', {});
+  plugins.loadAll();
+
+  t.equals(plugins.list()[0], 'foo');
+
+  t.end();
+});
+
+
 test('plugin add fail missing opts', function(t) {
   var plugins = createPlugins(new FakeGame(), {require:fakeRequire});
 
