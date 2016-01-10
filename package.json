@@ -1,7 +1,7 @@
 {
   "name": "voxel-plugins",
   "description": "dynamically load plugins for voxel-engine",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "main": "plugins.js",
   "repository": {
     "type": "git",
