@@ -2,9 +2,9 @@
 
 An API for loading and enabling plugins in voxel.js with support for soft dependencies.
 
-For a list of available plugins, see [the wiki](https://github.com/deathcap/voxel-plugins/wiki).
+For a list of available plugins, see [the wiki](https://github.com/voxel/voxel-plugins/wiki).
 
-[![Build Status](https://travis-ci.org/deathcap/voxel-plugins.png)](https://travis-ci.org/deathcap/voxel-plugins)
+[![Build Status](https://travis-ci.org/voxel/voxel-plugins.png)](https://travis-ci.org/voxel/voxel-plugins)
 
 ## Loading plugins
 
@@ -79,7 +79,7 @@ To support it, just implement enable() and disable() methods, and call enable() 
     }
 
 In enable() you register event handlers, in disable() remove them, and so on. Implementing enable/disable
-support allows your plugin to be enabled and disabled using [voxel-plugins-ui](https://github.com/deathcap/voxel-plugins-ui),
+support allows your plugin to be enabled and disabled using [voxel-plugins-ui](https://github.com/voxel/voxel-plugins-ui),
 or otherwise.
 
 ### Soft dependencies & load order
@@ -87,7 +87,7 @@ or otherwise.
 Often it is useful to call into another plugin instance during initialization, but in order 
 for this to work the other plugin must be loaded before yours. To do this, set the `pluginInfo` property
 on the exported object to contain the `loadAfter` property with a list of plugins to load first, for example
-(from [voxel-workbench](https://github.com/deathcap/voxel-workbench)):
+(from [voxel-workbench](https://github.com/voxel/voxel-workbench)):
 
     module.exports.pluginInfo = {
         loadAfter: ['voxel-registry', 'craftingrecipes']
@@ -98,10 +98,10 @@ Since the above plugins will be loaded first, you can now safely execute `game.p
 
 voxel-plugins performs a topological sort to determine the correct load order. For a more
 complex dependency tree, check out
-[voxel-reach](https://github.com/deathcap/voxel-reach),
-[voxel-mine](https://github.com/deathcap/voxel-mine),
-[voxel-use](https://github.com/deathcap/voxel-use), and
-[voxel-harvest](https://github.com/deathcap/voxel-harvest).
+[voxel-reach](https://github.com/voxel/voxel-reach),
+[voxel-mine](https://github.com/voxel/voxel-mine),
+[voxel-use](https://github.com/voxel/voxel-use), and
+[voxel-harvest](https://github.com/voxel/voxel-harvest).
 
 ### Adding game content
 
@@ -110,7 +110,7 @@ voxel-plugins only handles loading and enabling/disabling plugins.
 To implement the actual functionality of your plugin (modifying the game, etc.), you 
 can use the voxel-engine APIs (instance passed in the `game` parameter), or other plugin APIs.
 voxel-plugins itself is available in `game.plugins` and can be used to lookup other plugins
-for this purpose. See also [voxel-registry](https://github.com/deathcap/voxel-registry).
+for this purpose. See also [voxel-registry](https://github.com/voxel/voxel-registry).
 
 
 
