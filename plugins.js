@@ -14,6 +14,7 @@ function Plugins(game, opts) {
   if (this.game) this.game.plugins = this;
 
   opts = opts || {};
+  this.loaders = opts.loaders || {};
   this.require = opts.require || require;
   this.catchExceptions = false;
   this.masterPluginName = opts.masterPluginName || 'voxel-engine'; // synthetic 'plugin' created as parent of all
@@ -48,7 +49,13 @@ Plugins.prototype.wrapExceptions = function(f) {
 // Require the plugin module and return its factory constructor
 // This does not construct the plugin instance, for that see instantiate()
 Plugins.prototype.scan = function(name) {
-  var createPlugin = this.require(name);   // factory for constructor
+  var createPlugin; // factory for constructor
+
+  if (name in this.loaders) {
+    createPlugin = this.loaders[name];
+  } else {
+    createPlugin = this.require(name);
+  }
 
   return createPlugin;
 };
